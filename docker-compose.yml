@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  prometheus-service-demo-0:
+    image: docker.io/julius/prometheus-demo-service:latest
+    ports:
+      - "10000:8080"
+
+  prometheus-service-demo-1:
+    image: docker.io/julius/prometheus-demo-service:latest
+    ports:
+      - "20000:8080"
+
+  prometheus-service-demo-2:
+    image: docker.io/julius/prometheus-demo-service:latest
+    ports:
+      - "30000:8080"
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    container_name: grafana
+
+volumes:
+  grafana-storage:
